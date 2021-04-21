@@ -153,9 +153,7 @@ class AudioRecorderModule(yarp.RFModule):
     def record_audio(self):
         self.sound = self.audio_in_port.read(False)
         if self.sound:
-
             chunk = np.zeros((self.sound.getChannels(), self.sound.getSamples()), dtype=np.float32)
-            self.nb_samples_received += self.sound.getSamples()
             for c in range(self.sound.getChannels()):
                 for i in range(self.sound.getSamples()):
                     chunk[c][i] = self.sound.get(i, c) / 32768.0
