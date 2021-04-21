@@ -43,6 +43,8 @@ class AudioRecorderModule(yarp.RFModule):
 
         self.audio = []
 
+        self.sound_fs = None
+
         self.record = False
 
         self.np_audio = None
@@ -153,6 +155,9 @@ class AudioRecorderModule(yarp.RFModule):
     def record_audio(self):
         self.sound = self.audio_in_port.read(False)
         if self.sound:
+            if self.sound_fs is None:
+                self.sound_fs = self.sound.getFrequency()
+
             chunk = np.zeros((self.sound.getChannels(), self.sound.getSamples()), dtype=np.float32)
             for c in range(self.sound.getChannels()):
                 for i in range(self.sound.getSamples()):
@@ -176,7 +181,7 @@ class AudioRecorderModule(yarp.RFModule):
         filename = f'{self.saving_path}/{self.date_path}/{self.start_ts}_{self.stop_ts}.wav'
         np_audio = np.squeeze(np_audio)
         a = np.transpose(np_audio, (1, 0))
-        sf.write(filename, a, self.sound.getFrequency())
+        sf.write(filename, a, self.sound_fs )
 
 
 if __name__ == '__main__':
